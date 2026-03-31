@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PromptForge — Semantic prompt optimizer for ChatGPT, Claude, and Gemini. Reduce tokens, extend sessions, preserve quality.">
+    <title>PromptForge — Semantic Prompt Optimizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Header -->
+    <header id="app-header">
+        <div class="header-content">
+            <div class="logo-group">
+                <div class="logo-icon">⚡</div>
+                <div class="logo-text">
+                    <h1>PromptForge</h1>
+                    <span class="tagline">Semantic Token Optimizer</span>
+                </div>
+            </div>
+            <nav class="header-actions">
+                <a href="https://github.com/promptforge/promptforge" target="_blank" class="btn btn-ghost" id="github-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main App -->
+    <main id="app-main">
+        <!-- Model Selector -->
+        <section class="model-selector" id="model-selector">
+            <button class="model-tab" data-model="chatgpt" id="tab-chatgpt">
+                <span class="model-dot dot-chatgpt"></span>
+                <span class="model-name">ChatGPT</span>
+            </button>
+            <button class="model-tab active" data-model="claude" id="tab-claude">
+                <span class="model-dot dot-claude"></span>
+                <span class="model-name">Claude</span>
+            </button>
+            <button class="model-tab" data-model="gemini" id="tab-gemini">
+                <span class="model-dot dot-gemini"></span>
+                <span class="model-name">Gemini</span>
+            </button>
+        </section>
+
+        <!-- Controls Bar -->
+        <section class="controls-bar" id="controls-bar">
+            <div class="control-group">
+                <label for="aggression-slider">Compression</label>
+                <div class="slider-container">
+                    <input type="range" id="aggression-slider" min="0" max="2" value="1" step="1">
+                    <div class="slider-labels">
+                        <span>Conservative</span>
+                        <span>Moderate</span>
+                        <span>Aggressive</span>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group control-actions">
+                <button class="btn btn-primary" id="btn-optimize" disabled>
+                    <span class="btn-icon">⚡</span> Optimize
+                </button>
+                <button class="btn btn-secondary" id="btn-compare">
+                    <span class="btn-icon">📊</span> Compare All
+                </button>
+                <button class="btn btn-ghost" id="btn-clear">Clear</button>
+            </div>
+        </section>
+
+        <!-- Editor Panels -->
+        <section class="editor-container" id="editor-container">
+            <!-- Input Panel -->
+            <div class="editor-panel panel-input" id="panel-input">
+                <div class="panel-header">
+                    <h2>Original Prompt</h2>
+                    <div class="panel-stats">
+                        <span class="stat" id="stat-input-chars">0 chars</span>
+                        <span class="stat-divider">·</span>
+                        <span class="stat" id="stat-input-tokens">0 tokens</span>
+                    </div>
+                </div>
+                <textarea
+                    id="input-editor"
+                    placeholder="Paste your prompt here...
+
+Example: Hey Claude, could you please write a Python function that calculates Fibonacci numbers? Make sure to use recursion and ensure the code is efficient. Return the result as a list. Thanks!"
+                    spellcheck="false"
+                    autocomplete="off"
+                ></textarea>
+            </div>
+
+            <!-- Divider -->
+            <div class="editor-divider" id="editor-divider">
+                <div class="divider-icon">→</div>
+            </div>
+
+            <!-- Output Panel -->
+            <div class="editor-panel panel-output" id="panel-output">
+                <div class="panel-header">
+                    <h2>Optimized Prompt</h2>
+                    <div class="panel-actions">
+                        <button class="btn btn-icon-only" id="btn-copy" title="Copy to clipboard" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        </button>
+                        <button class="btn btn-icon-only" id="btn-download" title="Download" disabled>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="output-content" id="output-editor">
+                    <div class="output-placeholder">
+                        <div class="placeholder-icon">✨</div>
+                        <p>Optimized prompt will appear here</p>
+                        <p class="placeholder-hint">Enter a prompt and click Optimize</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Metrics Dashboard -->
+        <section class="metrics-dashboard hidden" id="metrics-dashboard">
+            <div class="metric-card" id="metric-tokens">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-body">
+                    <div class="metric-label">Tokens Saved</div>
+                    <div class="metric-value" id="metric-tokens-value">0</div>
+                    <div class="metric-detail" id="metric-tokens-detail">0 → 0</div>
+                </div>
+            </div>
+            <div class="metric-card" id="metric-savings">
+                <div class="metric-icon">📉</div>
+                <div class="metric-body">
+                    <div class="metric-label">Compression</div>
+                    <div class="metric-value" id="metric-savings-value">0%</div>
+                    <div class="metric-detail" id="metric-savings-detail">1.00x ratio</div>
+                </div>
+            </div>
+            <div class="metric-card" id="metric-cost">
+                <div class="metric-icon">💰</div>
+                <div class="metric-body">
+                    <div class="metric-label">Cost Saved</div>
+                    <div class="metric-value" id="metric-cost-value">$0.000</div>
+                    <div class="metric-detail" id="metric-cost-detail">per request</div>
+                </div>
+            </div>
+            <div class="metric-card" id="metric-time">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-body">
+                    <div class="metric-label">Processing</div>
+                    <div class="metric-value" id="metric-time-value">0ms</div>
+                    <div class="metric-detail" id="metric-time-detail">local pipeline</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Compare View (hidden by default) -->
+        <section class="compare-view hidden" id="compare-view">
+            <h2>Cross-Platform Comparison</h2>
+            <div class="compare-grid" id="compare-grid">
+                <!-- Generated by JS -->
+            </div>
+        </section>
+
+        <!-- Warnings -->
+        <section class="warnings-bar hidden" id="warnings-bar">
+            <!-- Generated by JS -->
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer id="app-footer">
+        <p>PromptForge v1.0.0 · MIT License · Built for the open-source community</p>
+        <p class="footer-muted">Semantic compression for ChatGPT, Claude, and Gemini</p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
